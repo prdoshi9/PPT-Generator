@@ -1,0 +1,6 @@
+Flask
+Flask-CORS
+python-pptx
+requests
+Werkzeug
+gunicorn

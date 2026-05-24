@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PowerPoint Generator - AI-Powered Presentations</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="main-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <h1 class="hero-title">
+        <i class="bi bi-magic"></i>
+        AI PowerPoint Generator
+      </h1>
+      <p class="hero-subtitle">Transform your text into beautiful presentations in seconds</p>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-cpu"></i></div>
+        <h6>Multi-LLM Support</h6>
+        <small>OpenAI, Claude, Gemini</small>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-palette"></i></div>
+        <h6>Style Preservation</h6>
+        <small>Keeps your template design</small>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+        <h6>Privacy First</h6>
+        <small>API keys never stored</small>
+      </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="main-card">
+      <div class="card-header">
+        <h3 class="mb-0">Create Your Presentation</h3>
+      </div>
+      
+      <div class="card-body">
+        <form id="pptForm" novalidate>
+          <!-- Text Input -->
+          <div class="form-floating mb-4">
+            <textarea 
+              class="form-control" 
+              id="text" 
+              name="text" 
+              style="height: 120px" 
+              placeholder="Paste your content here..."
+              required>
+            </textarea>
+            <label for="text">
+              <i class="bi bi-file-text me-2"></i>
+              Your Text Content
+            </label>
+            <div class="tooltip-text">
+              Paste your text, markdown, or prose. The AI will structure it into slides.
+            </div>
+          </div>
+
+          <!-- Guidance -->
+          <div class="form-floating mb-4">
+            <input 
+              type="text" 
+              class="form-control" 
+              id="guidance" 
+              name="guidance" 
+              placeholder="Optional presentation guidance...">
+            <label for="guidance">
+              <i class="bi bi-compass me-2"></i>
+              Optional Guidance
+            </label>
+            <div class="tooltip-text">
+              One line guidance. E.g., "Create an investor pitch deck" or "Make it technical and detailed"
+            </div>
+          </div>
+
+          <!-- Provider Selection -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-robot me-2"></i>
+              Choose AI Provider
+            </label>
+            <div class="provider-select">
+              <div class="provider-option" data-provider="openai">
+                <div class="provider-icon">🤖</div>
+                <div class="fw-semibold">OpenAI</div>
+                <small class="text-muted">GPT-4</small>
+              </div>
+              <div class="provider-option" data-provider="anthropic">
+                <div class="provider-icon">🧠</div>
+                <div class="fw-semibold">Anthropic</div>
+                <small class="text-muted">Claude</small>
+              </div>
+              <div class="provider-option" data-provider="gemini">
+                <div class="provider-icon">💎</div>
+                <div class="fw-semibold">Google</div>
+                <small class="text-muted">Gemini</small>
+              </div>
+              <div class="provider-option" data-provider="aipipe">
+                <div class="provider-icon">🛠️</div>
+                <div class="fw-semibold">AiPipe</div>
+                <small class="text-muted">aipipe.org</small>
+              </div>
+            </div>
+            <input type="hidden" id="provider" name="provider" value="openai" required>
+          </div>
+
+          <!-- API Key -->
+          <div class="form-floating mb-4">
+            <input 
+              type="password" 
+              class="form-control" 
+              id="apiKey" 
+              name="api_key" 
+              placeholder="Your API key..."
+              required>
+            <label for="apiKey">
+              <i class="bi bi-key me-2"></i>
+              API Key
+            </label>
+            <div class="tooltip-text">
+              <i class="bi bi-shield-check text-success me-1"></i>
+              Your API key is never stored or logged - used only for this request
+            </div>
+          </div>
+
+          <!-- File Upload -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-file-earmark-ppt me-2"></i>
+              PowerPoint Template
+            </label>
+            <div class="file-upload-area" id="fileUploadArea">
+              <div class="file-icon">
+                <i class="bi bi-cloud-upload"></i>
+              </div>
+              <div class="file-text">Click to upload or drag & drop</div>
+              <div class="file-subtext">Supports .pptx and .potx files (max 30MB)</div>
+              <input 
+                type="file" 
+                id="templateFile" 
+                name="template" 
+                class="hidden-input" 
+                accept=".pptx,.potx" 
+                required>
+            </div>
+            <div id="fileName" class="mt-2 text-muted"></div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary generate-btn" id="generateBtn">
+            <i class="bi bi-magic me-2"></i>
+            Generate Presentation
+          </button>
+        </form>
+
+        <!-- Status Area -->
+        <div id="statusArea" class="status-area" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Form elements
+    const form = document.getElementById('pptForm');
+    const statusArea = document.getElementById('statusArea');
+    const fileInput = document.getElementById('templateFile');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileName = document.getElementById('fileName');
+    const generateBtn = document.getElementById('generateBtn');
+    const providerInput = document.getElementById('provider');
+    const providerOptions = document.querySelectorAll('.provider-option');
+
+    // Provider selection - force user to choose
+    providerOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        providerOptions.forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        providerInput.value = option.dataset.provider;
+      });
+    });
+
+    // File upload handling
+    fileUploadArea.addEventListener('click', () => fileInput.click());
+    
+    fileUploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.add('dragover');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', () => {
+      fileUploadArea.classList.remove('dragover');
+    });
+    
+    fileUploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.remove('dragover');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        updateFileName();
+      }
+    });
+
+    fileInput.addEventListener('change', updateFileName);
+
+    function updateFileName() {
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileName.innerHTML = `
+          <i class="bi bi-file-earmark-ppt text-primary me-2"></i>
+          <strong>${file.name}</strong> 
+          <span class="text-muted">(${(file.size / 1024 / 1024).toFixed(1)} MB)</span>
+        `;
+        fileUploadArea.style.borderColor = 'var(--success-color)';
+        fileUploadArea.querySelector('.file-text').textContent = 'File selected successfully!';
+      } else {
+        fileName.textContent = '';
+        fileUploadArea.style.borderColor = '#cbd5e1';
+        fileUploadArea.querySelector('.file-text').textContent = 'Click to upload or drag & drop';
+      }
+    }
+
+    function showStatus(message, type) {
+      statusArea.style.display = 'flex';
+      statusArea.className = `status-area status-${type}`;
+      statusArea.innerHTML = message;
+    }
+
+    function hideStatus() {
+      statusArea.style.display = 'none';
+    }
+
+    function setLoading(loading) {
+      generateBtn.disabled = loading;
+      if (loading) {
+        generateBtn.classList.add('btn-loading');
+        generateBtn.innerHTML = '<span style="opacity: 0;">Generating...</span>';
+      } else {
+        generateBtn.classList.remove('btn-loading');
+        generateBtn.innerHTML = '<i class="bi bi-magic me-2"></i>Generate Presentation';
+      }
+    }
+
+    // Form validation
+    function validateForm() {
+      const text = document.getElementById('text').value.trim();
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const file = fileInput.files[0];
+
+      if (!text) {
+        showStatus('<i class="bi bi-exclamation-triangle me-2"></i>Please enter some text content', 'error');
+        return false;
+      }
+
+      if (!apiKey) {
+        showStatus('<i class="bi bi-exclamation-triangle me-2"></i>Please enter your API key', 'error');
+        return false;
+      }
+
+      if (!file) {
+        showStatus('<i class="bi bi-exclamation-triangle me-2"></i>Please upload a PowerPoint template', 'error');
+        return false;
+      }
+
+      const provider = document.getElementById('provider').value;
+      if (!provider) {
+        showStatus('<i class="bi bi-exclamation-triangle me-2"></i>Please select an AI provider', 'error');
+        return false;
+      }
+
+      const validTypes = ['application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-powerpoint'];
+      if (!file.name.toLowerCase().endsWith('.pptx') && !file.name.toLowerCase().endsWith('.potx')) {
+        showStatus('<i class="bi bi-exclamation-triangle me-2"></i>Please upload a valid PowerPoint file (.pptx or .potx)', 'error');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!validateForm()) {
+        return;
+      }
+
+      setLoading(true);
+      
+      const steps = [
+        'Validating inputs...',
+        'Processing template...',
+        'Calling AI to structure content...',
+        'Generating presentation...',
+        'Preparing download...'
+      ];
+      
+      let currentStep = 0;
+      
+      function updateProgress() {
+        if (currentStep < steps.length) {
+          showStatus(`
+            <div>
+              <i class="bi bi-arrow-clockwise spin me-2"></i>
+              ${steps[currentStep]}
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${((currentStep + 1) / steps.length) * 100}%"></div>
+            </div>
+          `, 'info');
+          currentStep++;
+        }
+      }
+
+      const progressInterval = setInterval(updateProgress, 1000);
+      updateProgress();
+
+      try {
+        const formData = new FormData(form);
+        
+        const response = await fetch('/generate', {
+          method: 'POST',
+          body: formData
+        });
+
+        clearInterval(progressInterval);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
+          throw new Error(errorData.error || `Server error: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        // Create download link
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'generated_presentation.pptx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        window.URL.revokeObjectURL(url);
+        
+        showStatus(`
+          <div>
+            <i class="bi bi-check-circle me-2"></i>
+            Presentation generated successfully!
+          </div>
+          <small class="d-block mt-2">Your download should start automatically.</small>
+        `, 'success');
+
+      } catch (error) {
+        clearInterval(progressInterval);
+        console.error('Generation error:', error);
+        
+        let errorMessage = error.message;
+        if (errorMessage.includes('API')) {
+          errorMessage += ' Please check your API key and try again.';
+        }
+        
+        showStatus(`
+          <div>
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Generation failed
+          </div>
+          <small class="d-block mt-1">${errorMessage}</small>
+        `, 'error');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // API key validation (optional feature)
+    let validationTimeout;
+    document.getElementById('apiKey').addEventListener('input', () => {
+      clearTimeout(validationTimeout);
+      validationTimeout = setTimeout(validateApiKey, 1000);
+    });
+
+    async function validateApiKey() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const provider = providerInput.value;
+      
+      if (!apiKey || apiKey.length < 10) return;
+      
+      try {
+        const response = await fetch('/test-api', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ provider, api_key: apiKey })
+        });
+        
+        const result = await response.json();
+        
+        if (result.valid) {
+          document.getElementById('apiKey').style.borderColor = 'var(--success-color)';
+        } else {
+          document.getElementById('apiKey').style.borderColor = 'var(--danger-color)';
+        }
+      } catch (error) {
+        // Silently fail validation check
+        document.getElementById('apiKey').style.borderColor = '#e2e8f0';
+      }
+    }
+
+    // Add some nice animations
+    document.querySelectorAll('.form-control, .form-select').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+      });
+    });
+
+    // Add spinning animation class
+    const style = document.createElement('style');
+    style.textContent = `
+      .spin {
+        animation: spin 1s linear infinite;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
