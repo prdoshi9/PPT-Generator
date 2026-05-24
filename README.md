@@ -35,7 +35,7 @@
 1. **Clone the repository**
    ```bash
    git clone https://github.com/prdoshi9/PPT-Generator.git
-   cd TDS-PPT-GENERATOR
+   cd PPT-Generator
    ```
 
 2. **Install dependencies**
